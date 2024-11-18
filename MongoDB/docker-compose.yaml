@@ -1,0 +1,28 @@
+
+version: '3.1'
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 1
+      MONGO_INITDB_DATABASE: testdb
+    ports:
+      - "27030:27017" #Default mongo port is 27017, to not have any conflict with another instance, use any port beside the default
+    volumes:
+      - mongo_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 1
+      ME_CONFIG_MONGODB_URL: mongodb://root:1@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+volumes:
+  mongo_data:
+    driver: local

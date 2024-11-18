@@ -1,0 +1,1 @@
+Esse repositorio contem arquivos para criacao de uma instacia do mongodb, caso deseje inicializar o servidor com um banco default ja criado execute o comando: ```docker compose up -d``` isso fara com que os volumes definidos sejam utilizados no momento da criacao do container. OBS: Caso ja exista um volume com o mesmo nome, apague e rode novamente.
