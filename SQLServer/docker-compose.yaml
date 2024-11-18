@@ -2,17 +2,23 @@ version: '3.8'
 
 services:
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/mssql/server:2022-CU12-ubuntu-22.04
+    hostname: scratch-mssql
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=YourStrongPassword!123
       - MSSQL_PID=Express
     ports:
-      - "1433:1433"
+      - 14330:1433
     volumes:
-      - sqlserver_data:/var/opt/mssql
-      - ./init-db:/docker-entrypoint-initdb.d
-    command: /bin/bash -c " /opt/mssql/bin/sqlservr & sleep 30 && /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrongPassword!123' -i /docker-entrypoint-initdb.d/init.sql"
-
-volumes:
-  sqlserver_data:
+      - ./data/mssql/backups:/var/opt/mssql/backups
+      - ./data/mssql/data:/var/opt/mssql/data
+      - ./data/mssql/log:/var/opt/mssql/log
+  mssql-tools:
+    image: mcr.microsoft.com/mssql-tools:latest
+    restart: no
+    command: "/opt/mssql-tools/bin/sqlcmd -S scratch-mssql -l 60 -U sa -P YourStrongPassword!123 -d master -i /init-db.sql"
+    depends_on:
+      - sqlserver
+    volumes:
+      - ./init-db.sql:/init-db.sql
